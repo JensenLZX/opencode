@@ -12,11 +12,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.GITEE_SSH_KEY }}
-
       - run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITEE_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan gitee.com >> ~/.ssh/known_hosts
           git remote add gitee git@gitee.com:rogerlzx/opencode.git
           git push gitee HEAD:refs/heads/dev --force
