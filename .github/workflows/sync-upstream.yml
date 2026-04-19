@@ -5,8 +5,12 @@ on:
     - cron: "0 */6 * * *"
   workflow_dispatch:
 
+env:
+  ENABLE_SYNC: "false"
+  
 jobs:
   sync:
+    if: env.ENABLE_SYNC == "true"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
