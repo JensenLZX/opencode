@@ -4,18 +4,27 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  ENABLE_MIRROR: "false"   # 👈 总开关（改成 "true" 即启用）
+
 jobs:
   mirror:
+    if: env.ENABLE_MIRROR == 'true'
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - run: |
+      - name: Setup SSH
+        run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.GITEE_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan gitee.com >> ~/.ssh/known_hosts
-          git remote add gitee git@gitee.com:rogerlzx/opencode.git
+
+      - name: Push to Gitee
+        run: |
+          git remote add gitee git@gitee.com:rogerlzx/opencode.git || true
           git push gitee HEAD:refs/heads/dev --force
